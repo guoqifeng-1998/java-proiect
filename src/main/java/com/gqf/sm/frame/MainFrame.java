@@ -1,9 +1,13 @@
 package com.gqf.sm.frame;
 
+import com.gqf.sm.entity.Department;
+import com.gqf.sm.factory.ServiceFactory;
 import com.sun.org.apache.xml.internal.security.Init;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 
 /**
@@ -25,11 +29,15 @@ public class MainFrame extends JFrame {
     private JPanel studentPanel;
     private JPanel rewardPanel;
 
-    private final  CardLayout c;
+    private final CardLayout c;
 
 
     public MainFrame() {
         init();
+        院系管理Button.setOpaque(false);
+        班级管理Button.setOpaque(false);
+        学生管理Button.setOpaque(false);
+        奖惩管理Button.setOpaque(false);
         c = new CardLayout();
         centerPanel.setLayout(c);
         centerPanel.add("1", departmentPanel);
@@ -48,6 +56,7 @@ public class MainFrame extends JFrame {
         奖惩管理Button.addActionListener(e -> {
             c.show(centerPanel, "4");
         });
+        showDepartments();
     }
     public void  init(){
         this.setContentPane(mainPanel);
@@ -55,8 +64,27 @@ public class MainFrame extends JFrame {
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setVisible(true);
     }
+    private  void showDepartments(){
+        departmentPanel.removeAll();
+        List<Department> departmentList = ServiceFactory.getDepartmentServiceInstance().selectAll();
+        int len = departmentList.size();
+        int row = len % 4 == 0 ? len /4 : len /4 +1;
+        GridLayout gridLayout = new GridLayout(row,4,15,15);
+        departmentPanel.setLayout(gridLayout);
+        for ( Department department : departmentList){
+            JPanel depPanel = new JPanel();
+            depPanel.setPreferredSize(new Dimension(200,200));
+            depPanel.setBorder(BorderFactory.createTitledBorder(department.getDepartmentName()));
+            JLabel logoLabel = new JLabel("<html><img src = '" + department.getLogo() + "'width = 200 height = 200/></html>");
+            depPanel.add(logoLabel);
+            departmentPanel.add(depPanel);
+            departmentPanel.revalidate();
+        }
+    }
 
     public static void main(String[] args) {
         new MainFrame();
     }
+
 }
+
