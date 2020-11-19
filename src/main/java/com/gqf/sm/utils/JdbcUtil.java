@@ -50,7 +50,7 @@ public class JdbcUtil {
      *
      * @return CONNECTION
      */
-    public Connection getConnection() {
+    public static Connection getConnection() {
         try {
             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
         } catch (SQLException e) {

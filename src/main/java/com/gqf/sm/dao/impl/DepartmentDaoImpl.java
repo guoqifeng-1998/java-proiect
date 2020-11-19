@@ -21,9 +21,23 @@ import java.util.List;
 public class DepartmentDaoImpl  implements DepartmentDao {
 
     @Override
+    public int insertDepartment(Department department) throws SQLException {
+        JdbcUtil jdbcUtil = JdbcUtil.getInitJdbcUtil();
+        Connection connection = JdbcUtil.getConnection();
+        String sql = "INSERT INTO t_department(department_name,logo) VALUES(?,?)";
+        PreparedStatement pstmt  = connection.prepareStatement(sql);
+        pstmt.setString(1,department.getDepartmentName());
+        pstmt.setString(2,department.getLogo());
+        int n = pstmt.executeUpdate();
+        pstmt.close();
+        connection.close();
+        return n;
+    }
+
+    @Override
     public List<Department> getALL() throws SQLException {
         JdbcUtil jdbcUtil = JdbcUtil.getInitJdbcUtil();
-        Connection connection = jdbcUtil.getConnection();
+        Connection connection = JdbcUtil.getConnection();
         String sql = "SELECT * FROM t_department";
         PreparedStatement pstmt = connection.prepareStatement(sql);
         ResultSet rs = pstmt.executeQuery();
