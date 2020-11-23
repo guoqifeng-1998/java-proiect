@@ -1,11 +1,13 @@
 package com.gqf.sm.frame;
 
+import com.gqf.sm.entity.Clazz;
 import com.gqf.sm.entity.Department;
 import com.gqf.sm.factory.ServiceFactory;
 import com.gqf.sm.utils.Aliossutil;
 import com.sun.org.apache.xml.internal.security.Init;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -46,6 +48,11 @@ public class MainFrame extends JFrame {
     private JPanel contentPanel;
     private JTextField depNameField;
     private JButton 新增Button;
+    private JTextField searchField;
+    private JButton 新增班级Button;
+    private JComboBox<Department> depCombobox;
+    private JPanel treePanel;
+    private JPanel classContentPanel;
 
     private final CardLayout c;
 
@@ -67,6 +74,7 @@ public class MainFrame extends JFrame {
         });
         班级管理Button.addActionListener(e -> {
             c.show(centerPanel, "2");
+            showClazz();
         });
         学生管理Button.addActionListener(e -> {
             c.show(centerPanel, "3");
@@ -149,11 +157,70 @@ public class MainFrame extends JFrame {
             depPanel.add(nameLabel);
             depPanel.add(logoLabel);
             depPanel.add(delBtn);
+            delBtn.addActionListener(e->{
+                int id = department.getId();
+                ServiceFactory.getDepartmentServiceInstance().deleteDepartmentById(id);
+                showDepartments();
+            });
             contentPanel.add(depPanel);
             contentPanel.revalidate();
         }
-    }
 
+    }
+ private  void showClazz(){
+        List<Department> departments =ServiceFactory.getDepartmentServiceInstance().selectAll();
+        showCombobox(departments);
+        showTree(departments);
+        showClazz(departments);
+ }
+  private void  showCombobox(List<Department> departments){
+        for (Department department : departments){
+            depCombobox.addItem(department);
+        }
+  }
+  private  void  showTree(List<Department> departments){
+        treePanel.removeAll();
+      DefaultMutableTreeNode root = new DefaultMutableTreeNode("南京工业职业技术大学");
+      for (Department department: departments){
+          DefaultMutableTreeNode group = new DefaultMutableTreeNode(department.getDepartmentName());
+          root.add(group);
+          List<Clazz> clazzList = ServiceFactory.getClazzServiceInstance().getClazzByDepId(department.getId());
+          for (Clazz clazz : clazzList){
+              DefaultMutableTreeNode node = new DefaultMutableTreeNode(clazz.getClassName());
+              group.add(node);
+          }
+      }
+      final  JTree tree = new JTree(root);
+      tree.setRowHeight(30);
+      tree.setFont(new Font("微软雅黑",Font.PLAIN,14));
+      treePanel.add(tree,BorderLayout.CENTER);
+      treePanel.revalidate();
+  }
+  private  void  showClazz(List<Department> departments){
+        classContentPanel.removeAll();
+      classContentPanel.setLayout(new GridLayout(0,5,15,15));
+      Font titleFont = new Font("微软雅黑",Font.PLAIN,16);
+      for (Department department :departments){
+          JPanel depPanel = new JPanel();
+          depPanel.setPreferredSize(new Dimension(120,150));
+          depPanel.setBackground(new Color(63,98,131));
+          depPanel.setLayout(new BorderLayout());
+          JLabel depNameLabel = new JLabel(department.getDepartmentName());
+          depNameLabel.setFont(titleFont);
+          depNameLabel.setForeground(new Color(255,255,255));
+          depPanel.add(depNameLabel,BorderLayout.NORTH);
+          List<Clazz> clazzList = ServiceFactory.getClazzServiceInstance().getClazzByDepId(department.getId());
+          DefaultListModel<Clazz> listModel = new DefaultListModel<>();
+          for (Clazz clazz :clazzList){
+              listModel.addElement(clazz);
+          }
+          JList<Clazz> jList = new JList<>(listModel);
+          jList.setBackground(new Color(101,134,184));
+          JScrollPane scrollPane =  new JScrollPane(jList);
+          depPanel.add(scrollPane,BorderLayout.CENTER);
+          classContentPanel.add(depPanel);
+      }
+  }
     public static void main(String[] args) {
         new MainFrame();
     }

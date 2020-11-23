@@ -15,6 +15,13 @@ import java.util.List;
  **/
 public interface DepartmentDao {
     /**
+     * 根据id删除
+     * @param  id
+     * @return int
+     * @throws SQLException
+     */
+    int deleteDepartmentById(int id) throws SQLException;
+    /**
      * @param  depaetment 入参
      * @return int
      * @throws SQLException 异常

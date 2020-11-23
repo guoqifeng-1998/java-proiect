@@ -5,6 +5,7 @@ import com.gqf.sm.entity.Department;
 import java.util.List;
 
 public interface DepartmentService {
+    int deleteDepartmentById(int id);
     /**
      * 新增院系
      *

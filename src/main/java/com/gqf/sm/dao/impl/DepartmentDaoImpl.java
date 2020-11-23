@@ -20,6 +20,21 @@ import java.util.List;
  **/
 public class DepartmentDaoImpl  implements DepartmentDao {
 
+
+    @Override
+    public int deleteDepartmentById(int id) throws SQLException {
+        JdbcUtil jdbcUtil = JdbcUtil.getInitJdbcUtil();
+        Connection connection =  JdbcUtil.getConnection();
+        String sql = "DELETE FROM t_department WHERE id =?";
+        PreparedStatement pstmt = connection.prepareStatement(sql);
+        pstmt.setInt(1, id);
+        int n = pstmt.executeUpdate();
+        pstmt.close();
+        jdbcUtil.closeConnection();
+        return n;
+
+    }
+
     @Override
     public int insertDepartment(Department department) throws SQLException {
         JdbcUtil jdbcUtil = JdbcUtil.getInitJdbcUtil();
@@ -53,5 +68,8 @@ public class DepartmentDaoImpl  implements DepartmentDao {
         pstmt.close();
         jdbcUtil.closeConnection();
         return  departmentList;
+    }
+
+    private class dbcUtil {
     }
 }

@@ -18,6 +18,18 @@ public class DepartmentServiceImpl  implements DepartmentService {
     private final DepartmentDao departmentDao = DaoFactory.getDepartmentDaoInstance();
 
     @Override
+    public int deleteDepartmentById(int id) {
+        int n = 0;
+        try {
+            n = departmentDao.deleteDepartmentById(id);
+        } catch ( SQLException e){
+            e.printStackTrace();
+        }
+        return n;
+
+    }
+
+    @Override
     public List<Department> selectAll() {
         List<Department> departmentList = null;
         try {
