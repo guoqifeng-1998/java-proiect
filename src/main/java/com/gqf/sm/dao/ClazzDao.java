@@ -27,6 +27,13 @@ public interface ClazzDao {
      * @throws java.sql.SQLException 异常
      */
    List<Clazz> selectByDepartmentId(int departmentId) throws SQLException;
+    /**
+     * 删除班级
+     * @param  id 班级id
+     * @return int
+     * @throws SQLException 异常
+     */
+     int deleteClazz(int id) throws SQLException;
 
 
 }

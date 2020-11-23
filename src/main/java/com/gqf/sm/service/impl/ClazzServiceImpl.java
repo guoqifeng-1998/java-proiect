@@ -21,6 +21,18 @@ import java.util.List;
  **/
 public class ClazzServiceImpl  implements ClazzService {
 private  final  ClazzDao clazzDao = DaoFactory.getClazzDaoInstance();
+
+    @Override
+    public int addClazz(Clazz clazz) {
+        int n = 0;
+        try {
+            n = DaoFactory.getClazzDaoInstance().insertClazz(clazz);
+        } catch (SQLException throwables) {
+           System.err.println("新增班级出现异常");
+        }
+        return n;
+    }
+
     @Override
     public List<Clazz> getClazzByDepId(int departmentId) {
         List<Clazz> clazzList = null;
@@ -31,5 +43,16 @@ private  final  ClazzDao clazzDao = DaoFactory.getClazzDaoInstance();
             throwables.printStackTrace();
         }
 return clazzList;
+    }
+
+    @Override
+    public int deleteClazz(int id) {
+        int n = 0;
+        try {
+            n = DaoFactory.getClazzDaoInstance().deleteClazz(id);
+        } catch (SQLException e ){
+            System.err.println("插入班级出现异常");
+        }
+        return n;
     }
 }

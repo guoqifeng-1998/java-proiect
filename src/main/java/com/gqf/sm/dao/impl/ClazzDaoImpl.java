@@ -53,4 +53,17 @@ public class ClazzDaoImpl  implements ClazzDao {
         jdbcUtil.closeConnection();
         return clazzList;
     }
+
+    @Override
+    public int deleteClazz(int id) throws SQLException {
+        JdbcUtil jdbcUtil = JdbcUtil.getInitJdbcUtil();
+        Connection connection = JdbcUtil.getConnection();
+        String sql = "DELETE FROM t_class WHERE id = ? ";
+        PreparedStatement pstmt = connection.prepareStatement(sql);
+        pstmt.setInt(1,id);
+        int n = pstmt.executeUpdate();
+        pstmt.close();
+        jdbcUtil.closeConnection();
+        return  n ;
+    }
 }

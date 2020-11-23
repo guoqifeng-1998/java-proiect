@@ -11,6 +11,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.*;
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.List;
  * @Date 11/15/2020
  **/
 public class MainFrame extends JFrame {
+    private  int departmentId = 0;
     private String uploadFileUrl;
     private File file;
     private JPanel mainPanel;
@@ -48,11 +51,12 @@ public class MainFrame extends JFrame {
     private JPanel contentPanel;
     private JTextField depNameField;
     private JButton 新增Button;
-    private JTextField searchField;
+    private JTextField classNameField;
     private JButton 新增班级Button;
     private JComboBox<Department> depCombobox;
     private JPanel treePanel;
     private JPanel classContentPanel;
+    private JPanel classToolPanel;
 
     private final CardLayout c;
 
@@ -130,6 +134,25 @@ public class MainFrame extends JFrame {
                 JOptionPane.showMessageDialog(centerPanel,"新增院系失败");
             }
         });
+        depCombobox.addActionListener(e ->{
+            int index  = depCombobox.getSelectedIndex();
+            departmentId = depCombobox.getItemAt(index).getId();
+        });
+        新增班级Button.addActionListener(e ->{
+            Clazz clazz = new Clazz();
+            clazz.setDepartmentId(departmentId);
+            clazz.setClassName(classNameField.getText().trim());
+            int n = ServiceFactory.getClazzServiceInstance().addClazz(clazz);
+            if (n == 1){
+                JOptionPane.showMessageDialog(centerPanel,"新增班级成功");
+                classNameField.setText("");
+                showClazz();
+            } else {
+                JOptionPane.showMessageDialog(centerPanel,"新增班级失败");
+            }
+                }
+
+                );
     }
     public void  init(){
         this.setTitle("管理员");
@@ -219,6 +242,35 @@ public class MainFrame extends JFrame {
           JScrollPane scrollPane =  new JScrollPane(jList);
           depPanel.add(scrollPane,BorderLayout.CENTER);
           classContentPanel.add(depPanel);
+          JPopupMenu jPopupMenu = new JPopupMenu();
+          JMenuItem modifyItem = new JMenuItem("修改");
+          JMenuItem deleteItem = new JMenuItem("删除");
+          jPopupMenu.add(modifyItem);
+          jPopupMenu.add(deleteItem);
+          jList.add(jPopupMenu);
+          jList.addMouseListener(new MouseAdapter() {
+              @Override
+              public void mouseClicked(MouseEvent e) {
+
+                  int index = jList.getSelectedIndex();
+                  if (e.getButton() == 3) {
+                      jPopupMenu.show(jList,e.getX(),e.getY());
+                      Clazz clazz = jList.getModel().getElementAt(index);
+                      deleteItem.addActionListener(e1 -> {
+                          int choice = JOptionPane.showConfirmDialog(depPanel, "确定删除么吗?");
+                          if (choice == 0) {
+                              int n = ServiceFactory.getClazzServiceInstance().deleteClazz(clazz.getId());
+                              if (n == 1) {
+                                  listModel.remove(index);
+                                  showTree(ServiceFactory.getDepartmentServiceInstance().selectAll());
+                              }
+                          }
+                      });
+                  }
+              }
+          });
+
+
       }
   }
     public static void main(String[] args) {
