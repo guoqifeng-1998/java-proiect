@@ -1,12 +1,20 @@
 package com.gqf.sm.frame;
 
+import com.gqf.sm.componet.CustomPanel;
 import com.gqf.sm.entity.Clazz;
 import com.gqf.sm.entity.Department;
 import com.gqf.sm.factory.ServiceFactory;
 import com.gqf.sm.utils.Aliossutil;
+import com.gqf.sm.vo.StudentVo;
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.StringStack;
 import com.sun.org.apache.xml.internal.security.Init;
+import sun.swing.table.DefaultTableCellHeaderRenderer;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
@@ -57,6 +65,14 @@ public class MainFrame extends JFrame {
     private JPanel treePanel;
     private JPanel classContentPanel;
     private JPanel classToolPanel;
+    private JPanel bottom;
+    private JComboBox comboBox1;
+    private JComboBox comboBox2;
+    private JTextField searchField;
+    private JButton 搜索Button;
+    private JButton 新增学生Button;
+    private JButton 批量导入Button;
+    private JPanel tablePanel;
 
     private final CardLayout c;
 
@@ -153,7 +169,15 @@ public class MainFrame extends JFrame {
                 }
 
                 );
+        学生管理Button.addActionListener(e ->{
+            c.show(centerPanel,"3");
+            showStudents();
+                }
+                );
     }
+
+
+
     public void  init(){
         this.setTitle("管理员");
         this.setContentPane(mainPanel);
@@ -218,6 +242,48 @@ public class MainFrame extends JFrame {
       tree.setFont(new Font("微软雅黑",Font.PLAIN,14));
       treePanel.add(tree,BorderLayout.CENTER);
       treePanel.revalidate();
+  }
+  private void showStudents(){
+      CustomPanel stuInfoPanel = new CustomPanel("D:\\Student-manager\\src\\main\\resources\\img\\1.jpg");
+      stuInfoPanel.setPreferredSize(new Dimension(300,600));
+      JLabel title = new JLabel("学生信息");
+      title.setFont(new Font("楷体",Font.BOLD,20));
+      title.setForeground(new Color(97,174,239));
+     stuInfoPanel.add(title);
+      stuInfoPanel.repaint();
+      studentPanel.add(stuInfoPanel,BorderLayout.EAST);
+      List<StudentVo> students = ServiceFactory.getStudentServiceInstance().getStudentAll();
+      JTable table = new JTable();
+      DefaultTableModel model   =new DefaultTableModel();
+      table.setModel(model);
+      model.setColumnIdentifiers(new String[]{"学号", "院系","班级","姓名","性别","地址","手机号","出生日期","头像"});
+      for(StudentVo student :students){
+          Object[] object = new Object[]{
+                  student.getId(), student.getDepartmentName(), student.getClassName(),student.getStudentName(),student.getGender(),
+       student.getAddress(), student.getPhone(), student.getBirthday(),student.getAvatar()};
+          model.addRow(object);
+          TableColumn tc = table.getColumnModel().getColumn(8);
+          tc.setMaxWidth(0);
+          tc.setMinWidth(0);
+          JTableHeader header = table.getTableHeader();
+         DefaultTableCellHeaderRenderer hr  = new DefaultTableCellHeaderRenderer();
+          hr.setHorizontalTextPosition(JLabel.CENTER);
+          header.setDefaultRenderer(hr);
+          header.setPreferredSize(new Dimension(header.getWidth(),40));
+          header.setFont(new Font("楷体",Font.PLAIN,18));
+          table.setRowHeight(35);
+          table.setBackground(new Color(223,241,234));
+          DefaultTableCellRenderer r = new DefaultTableCellRenderer();
+          r.setHorizontalAlignment(JLabel.CENTER);
+          table.setDefaultRenderer(Object.class,r);
+          JScrollPane scrollPane = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+  tablePanel.add(scrollPane);
+  table.getSelectionModel().addListSelectionListener(e->{
+      int row = table.getSelectedRow();
+      JOptionPane.showMessageDialog(null,table.getValueAt(row,2).toString()+table.getValueAt(row,3).toString());
+  });
+
+      }
   }
   private  void  showClazz(List<Department> departments){
         classContentPanel.removeAll();
